@@ -5,7 +5,7 @@ import express from "express";
 const router = express.Router();
 
 //all listings
-router.get('/hotels',hotelListing.getAllListing);
+router.get('/allhotels',hotelListing.getAllListing);
 
 //booking-user
 router.post('/addhotel',hotelListing.addListing);
