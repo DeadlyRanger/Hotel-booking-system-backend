@@ -1,12 +1,14 @@
 import express from "express";
 import bookingController from "../controllers/Booking.controller.js";
 import isAuth from "../middleware/isAuth.js";
+import isRole from "../middleware/isRole.js";
 
 const bookingRouter = express.Router();
 
 bookingRouter.post(
   "/bookings/:listingId",
   isAuth,
+  
   bookingController.createBooking
 );
 
@@ -19,6 +21,7 @@ bookingRouter.get(
 bookingRouter.delete(
   "/bookings/:id",
   isAuth,
+ 
   bookingController.cancelBooking
 );
 

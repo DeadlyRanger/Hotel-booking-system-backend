@@ -6,7 +6,7 @@ dotenv.config()
 
 
 const register = async(req,res)=>{
-     const{name,email,password} = req.body;
+     const{name,email,password , role } = req.body;
        
       try{
           const existingUser  = await User.findOne({email});
@@ -14,7 +14,7 @@ const register = async(req,res)=>{
           if(existingUser) return res.status(400).json({message:'User is already registered', success:false})
 
              const hashedPassword = await bcrypt.hash(password,10);
-            const user =  new User({name,email,password :hashedPassword})
+            const user =  new User({name,email,password :hashedPassword , role : role || 'user' });
                            await user.save();
 
             res.status(200).json({message:'User registered successfully',success:true,user})
@@ -39,14 +39,21 @@ const login = async(req,res)=>{
                 const token = jwt.sign({
                     id:user._id,
                     name:user.name,
-                    email:user.email
+                    email:user.email,
+                    role:user.role
                 },process.env.JWT_SECRET);
 
-                res.cookie('token',token)
+             res.cookie("token", token, {
+  httpOnly: true,
+  secure: false,        // true in production (https)
+  sameSite: "lax"
+});
+
 
                 res.json({
                     message:'User logged in successfully',
-                    success:true
+                    success:true,
+                    user
                 })
 
                 }

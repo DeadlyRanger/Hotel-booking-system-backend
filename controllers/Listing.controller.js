@@ -37,7 +37,8 @@ const addListing = async(req,res)=>{
             Address,
             City,
             Contact,
-            Image
+            Image,
+            Owner:req.user.id
         })
         await addhotel.save();
         res.status(200).json({
@@ -80,6 +81,24 @@ const deleteListing = async (req, res) => {
   }
 };
 
+const getMyHotels = async (req, res) => {
+  try {
+    const hotels = await Listing.find({
+      Owner: req.user.id   // 🔥 ONLY my hotels
+    });
+
+    res.status(200).json({
+      success: true,
+      hotels
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
 const updateListing = async (req, res) => {
   try {
     const updatedHotel = await Listing.findByIdAndUpdate(
@@ -99,6 +118,27 @@ const updateListing = async (req, res) => {
 };
 
 
+const filterlisting = async(req,res)=>{
+    const {City} = req.body;
+    try{
+        const listings = await Listing.find({City});
 
-const hotelListing = {getAllListing,addListing,getListingById,deleteListing,updateListing}
+        res.status(200).json({
+            message:'Listing fetched successfully',
+            success:true,
+            listings
+        });
+
+    }
+    catch(err){
+        res.status(500).json({
+            message:err.message,
+            success:false
+        })  
+    }
+}
+
+
+
+const hotelListing = {getAllListing,getMyHotels,addListing,getListingById,deleteListing,updateListing,filterlisting}
 export default hotelListing
