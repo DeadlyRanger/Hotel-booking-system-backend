@@ -1,25 +1,36 @@
+import express from "express";
 import hotelListing from "../controllers/Listing.controller.js";
 import isAuth from "../middleware/isAuth.js";
 import isRole from "../middleware/isRole.js";
 
-import express from "express";
-
 const router = express.Router();
 
-//all listings
-router.get('/allhotels',hotelListing.getAllListing);
-router.post('/hotels',hotelListing.filterlisting);
+// ---------------- PUBLIC ROUTES ----------------
 
-//booking-user
-router.post('/addhotel',isAuth,isRole,hotelListing.addListing);
-router.get('/hotels/:id',hotelListing.getListingById);
-router.get('/managehotels',isAuth,isRole,hotelListing.getMyHotels);
+// all listings
+router.get("/allhotels", hotelListing.getAllListing);
 
+// filter listing (POST)
+router.post("/hotels", hotelListing.filterlisting);
 
-//owner only 
-router.put('/hotels/:id',isAuth,isRole,hotelListing.updateListing);
-router.delete('/hotels/:id',isAuth,isRole,hotelListing.deleteListing);
+// get single hotel
+router.get("/hotels/:id", hotelListing.getListingById);
 
+// 🔥 SEARCH HOTELS BY CITY (GET + QUERY)
+router.get("/hotelsincity", hotelListing.hotelsbyCity);
 
+// ---------------- PROTECTED ROUTES ----------------
+
+// add hotel (owner/admin)
+router.post("/addhotel", isAuth, isRole, hotelListing.addListing);
+
+// manage my hotels
+router.get("/managehotels", isAuth, isRole, hotelListing.getMyHotels);
+
+// update hotel
+router.put("/hotels/:id", isAuth, isRole, hotelListing.updateListing);
+
+// delete hotel
+router.delete("/hotels/:id", isAuth, isRole, hotelListing.deleteListing);
 
 export default router;
