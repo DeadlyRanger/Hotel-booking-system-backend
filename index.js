@@ -17,7 +17,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://hotel-booking-system-frontend-eight.vercel.app",
+    origin: "*",
     credentials: true
   })
 );
