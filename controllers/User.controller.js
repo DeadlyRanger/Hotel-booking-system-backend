@@ -45,7 +45,7 @@ const login = async(req,res)=>{
 
              res.cookie("token", token, {
   httpOnly: true,
-  secure: false,        // true in production (https)
+  secure: true,        // true in production (https)
   sameSite: "lax"
 });
 
