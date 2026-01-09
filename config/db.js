@@ -1,18 +1,17 @@
-import mongoose from 'mongoose'
-import dotenv from 'dotenv'
-dotenv.config()
+import mongoose from "mongoose";
 
-
-function dbConnect(){
-     try{
-             mongoose.connect(process.env.MONGO_URL)
-             console.log('database connected');
-
-     }
-     catch(err){
- console.error(err.message);
-     process.exit(1);
-     }
-}
+const dbConnect = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      tls: true,
+      retryWrites: false,
+    });
+    console.log("✅ MongoDB connected");
+  } catch (error) {
+    console.error("❌ MongoDB SSL error:", error.message);
+    process.exit(1);
+  }
+};
 
 export default dbConnect;
