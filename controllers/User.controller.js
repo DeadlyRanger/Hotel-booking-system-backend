@@ -25,44 +25,49 @@ const register = async(req,res)=>{
       }
 }
 
-const login = async(req,res)=>{
-     
-    const {email , password} = req.body;
+const login = async (req, res) => {
+    const { email, password } = req.body;
 
-    try{
-        const user = await User.findOne({email});
-        if(!user) return res.status(404).json({message:'User not found',success:false})
-            
-            const isMatch = await bcrypt.compare(password,user.password);
-            if(!isMatch) return res.status(400).json({message:'Invalid credentials',success:false})
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: 'User not found', success: false });
 
-                const token = jwt.sign({
-                    id:user._id,
-                    name:user.name,
-                    email:user.email,
-                    role:user.role
-                },process.env.JWT_SECRET);
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials', success: false });
 
-             res.cookie("token", token, {
+        // Generate Token
+        const token = jwt.sign({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+        // Set Cookie (matching your frontend withCredentials: true)
+     res.cookie("token", token, {
   httpOnly: true,
-  secure: true,        // true in production (https)
-  sameSite: "lax"
+ secure: process.env.NODE_ENV === "production",      // Must be true for cross-site cookies
+  sameSite: "None",  // Must be "None" for cross-site cookies
+  maxAge: 24 * 60 * 60 * 1000, 
+  path: "/",
 });
 
+        
+        res.status(200).json({
+            message: 'User logged in successfully',
+            success: true,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
 
-                res.json({
-                    message:'User logged in successfully',
-                    success:true,
-                    user
-                })
-
-                }
-
-    catch(err){
-    
-        res.status(500).json({message:err.message,success:false})
+    } catch (err) {
+        res.status(500).json({ message: err.message, success: false });
     }
-    }
+};
 
 const logout = async(req,res)=>{
     try{
